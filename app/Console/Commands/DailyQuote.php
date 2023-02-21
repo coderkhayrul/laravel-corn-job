@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\DailyReport;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -46,11 +47,7 @@ class DailyQuote extends Command
         $users = User::all();
 
         foreach ($users as $user) {
-            Mail::raw("{$key} -> {$data}", function ($mail) use ($user) {
-                $mail->from('coderkhayrul@gmail.com');
-                $mail->to($user->email)
-                    ->subject('Daily New Quote!');
-            });
+            Mail::to($user->email)->send(new DailyReport($user));
         }
         $this->info('Today\'s quote has been sent to ' . count($users) . ' users.');
     }
